@@ -76,4 +76,5 @@ void DrawDepend(double a, double b, double step, double minus_border, double bor
     }
     if (flag) 
         ss << "plot " << lineThroughtLastPoint << ", (\"speed.dat\") title 'Depend line' with linespoints ls 7"; 
+    gp.sendLine(ss.str()); 
 }
