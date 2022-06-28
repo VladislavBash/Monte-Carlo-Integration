@@ -65,6 +65,12 @@ int main() {
     printf("Absolute error:  %lf\n", accur);
     printf("Relative error:  %lf%%\n\n", accur/abs(truth)*100);
     DrawGraph(num, a, b, step, minus_border, border, function);
+    printf("Are you sure to continue?\n");
+    printf("Press 1 (is yes) or another number (is no)\n");
+    flag = 0;
+    scanf("%d", &flag);
+    if (flag != 1)
+        exit(0);
     DrawDepend(a, b, step, minus_border, border, function, pointsOnGraph);
     return 0;
 }
