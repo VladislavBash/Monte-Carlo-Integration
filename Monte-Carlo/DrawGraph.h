@@ -9,10 +9,19 @@ void DrawGraph(int num, double a, double b, double e, double minus_border, doubl
     GnuplotPipe gp;
     std::stringstream ss; 
     std::ofstream data("data.dat"); 
-    std::ofstream line("line.dat"); 
-    std::string namefunction = function; 
-    line << 0 << ' ' << minus_border << ' ' << '\n';  
-    line << 0 << ' ' << border << ' ' << '\n'; 
+    std::ofstream line("line.dat");
+    std::ofstream rect("rect.dat");  
+    double deltaBorder = (border - minus_border)/4;
+    double deltaA = (b - a)/4;
+    std::string namefunction = function;
+    rect << a << ' ' << minus_border << ' ' << '\n';  
+    rect << a << ' ' << border << ' ' << '\n'; 
+    rect << b << ' ' << border << ' ' << '\n'; 
+    rect << b << ' ' << minus_border << ' ' << '\n';  
+    rect << a << ' ' << minus_border << ' ' << '\n'; 
+    rect.close(); 
+    line << 0 << ' ' << minus_border - deltaBorder << ' ' << '\n';   //
+    line << 0 << ' ' << border +  deltaBorder << ' ' << '\n'; //
     line.close(); 
     for (int i = 0; i < num; ++i) { 
         double x = random(a, b); 
@@ -35,10 +44,12 @@ void DrawGraph(int num, double a, double b, double e, double minus_border, doubl
         n = function.find("e"); 
         function.replace(n, 1, "2.71828"); 
     }
-    ss << " set yr [" << minus_border << ":" << border << "]\n"; 
+    ss << "set cbrange [0:2]\n"; 
+    gp.sendLine(ss.str());
+    ss << " set yr [" << minus_border - deltaBorder << ":" << border + deltaBorder << "]\n"; // 
     gp.sendLine(ss.str()); 
     ss.clear(); 
-    ss << " set xr [" << a << ":" << b << "]\n"; 
+    ss << " set xr [" << a - deltaA << ":" << b + deltaA << "]\n"; //
     gp.sendLine(ss.str()); 
     ss.clear(); 
     gp.sendLine("set key textcolor '#ed9a09'\n"); 
@@ -46,7 +57,8 @@ void DrawGraph(int num, double a, double b, double e, double minus_border, doubl
     gp.sendLine("set palette defined ( 0 '#1B8E13', 1 '#EF0000', 2 '#13238E')\n"); 
     ss << "plot 0 title 'x' lc '#000000', (\"line.dat\") title 'y' with lines lc '#000000' lt 1, " << function << "title '" << namefunction << "' lc '#319208', ";
     ss.clear(); 
-    ss << "(\"data.dat\") title 'points' with points pt 7 ps 0.1 palette"; 
+    ss << "(\"data.dat\") title 'points' with points pt 7 ps 0.1 palette,"; 
+    ss << "(\"rect.dat\") notitle  with lines lc '#000000' lt 1 lw 1.5"; 
     gp.sendLine(ss.str()); 
 }
 
