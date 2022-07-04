@@ -6,6 +6,7 @@
 #include <stdio.h>
 #include <iostream>
 #include "../parser/fparser.hh"
+#include <vector>
 
 double f(double x, std::string function) {
     FunctionParser fparser;
@@ -144,9 +145,98 @@ void calcIntegral(double a, double b, double c, double d, std::string function, 
     accur = abs(accuracy(S, num, count));
 }
 
+// void startCond(double a, double b, double &c, double &d, double step, std::string function, double &minus_border, double &border) {
+//     double xmin = 0;
+//     double xmax = 0;
+//     higher_lower_point(a, b, step, function, border, minus_border);
+//     higher_lower__point_x_and_minus_border(a, b, step, function, xmax, xmin, c, d);
+// }
+
+double halfSplit(double a, double b, double er, std::string function) {
+    double p = (a+b)/2;;
+    while (b - a > er) {
+        p = (a+b)/2;
+        if (f(a, function)*f(p, function) > 0) {
+            a = p;
+        } else {
+            b = p;
+        }
+    }
+    return p;
+}
+
+double derivative(double a, double er, std::string function) {
+    return (f(a + er, function) - f(a, function)) / er; 
+}
+
+double halfExtr(double a, double b, double er, std::string function) {
+    double p = (a+b)/2;
+    if (derivative(a, er, function) * derivative(b, er, function) >= 0)
+        return 0;
+        // return std::max(a, b);
+    while (b - a > er) {
+        p = (a+b)/2;
+        if (derivative(a, er, function)*derivative(p, er, function) > 0) {
+            a = p;
+        } else {
+            b = p;
+        }
+    }
+    return p;
+    // return std::max(std::max(a, b), p);
+}
+
+void higher_lower_point2(double a, double b, double &c, double &d, double step, std::string function, double &border, double &minus_border) {
+    // double high = f(a, function);
+    // double low = high;
+    // double compareFunction = f(a, function);
+    // for (double x = a+step; x <= b; x += step) {
+    //     double fun = f(x, function);
+    //     if (fun > compareFunction) {
+    //         high = std::max(high, fun);
+    //     } else {
+    //         low = std::min(low, fun);
+    //     }
+    //     compareFunction = fun;
+    // }
+    double h = 0;
+    double hmin = f(a, function);;
+    double hmax = hmin;
+    std::vector<double> hzero;
+    for (double x = a+step; x <= b; x += step) {
+        double fun = f(x, function);
+        if (fun*f(x-step, function) >= 0) {
+            h = f(halfExtr(x-step, x, step/10, function), function);
+            double fa = f(a, function);
+            double fb = f(b, function);
+            hmin = std::min(std::min(hmin, h), std::min(fa, fb));
+            hmax = std::max(std::max(hmax, h), std::max(fa, fb));
+        } else {
+            hzero.push_back(halfSplit(x-step, x, step, function));
+        }
+    }
+    border = hmax;
+    if (hmin > 0)
+        hmin = 0;
+    minus_border = hmin;
+    if (hzero.size()) {
+        c = hzero.at(0);
+        d = hzero.at(hzero.size()-1);
+    }
+    // border = high;
+    // if (low > 0)
+    //     low = 0;
+    // minus_border = low;
+}
+
 void startCond(double a, double b, double &c, double &d, double step, std::string function, double &minus_border, double &border) {
-    double xmin = 0;
-    double xmax = 0;
-    higher_lower_point(a, b, step, function, border, minus_border);
-    higher_lower__point_x_and_minus_border(a, b, step, function, xmax, xmin, c, d);
+    // double xmin = 0;
+    // double xmax = 0;
+    c = 0;
+    d = 0;
+    border = 0;
+    minus_border = 0;
+    higher_lower_point2(a, b, c, d, step, function, border, minus_border);
+    // higher_lower_point(a, b, step, function, border, minus_border);
+    // higher_lower__point_x_and_minus_border(a, b, step, function, xmax, xmin, c, d);
 }

@@ -2,11 +2,12 @@
 #include "Monte-Carlo.hpp"
 #include <math.h>
 #include <iomanip>
+#include <vector>
 #define pi 3.1415926535897932
 #define e  2.7182818284590452
 
-bool compare(double const &a, double const &b, int const &sampling) { // необходимо для double и float
-    if (std::ceil(a*sampling)/sampling == std::ceil(b*sampling)/sampling) {
+bool compare(double a, double b, int const sampling) { // необходимо для double и float
+    if (std::round(a*sampling) == std::round(b*sampling)) {
         return true;
     }
     return false;
@@ -130,6 +131,119 @@ TEST_CASE("CHECK_C_D") {
     }
 }
 
+TEST_CASE("CHECK_CROSS") {
+    // double a = -20;
+    // double b = 20;
+    double er = 0.01;
+    std::vector<std::string> vec;
+    std::vector<double> val;
+    std::vector<double> a;
+    std::vector<double> b;
+
+    vec.push_back("x+10");
+    a.push_back(-20);
+    b.push_back(20);
+    val.push_back(-10);
+    vec.push_back("x^2-10");
+    a.push_back(0);
+    b.push_back(5);
+    val.push_back(3.16);
+    vec.push_back("x^3-50");
+    a.push_back(0);
+    b.push_back(5);
+    val.push_back(3.68);
+    // REQUIRE(val[0] == halfSplit(a, b, er, vec[0]));
+    for (int k = 0; k < vec.size(); k++) {
+        REQUIRE(compare(val[k], halfSplit(a[k], b[k], er, vec[k]), 10));
+    }
+}
+
+TEST_CASE("CHECK_EXTR") {
+    // double a = -20;
+    // double b = 20;
+    double er = 0.01;
+    std::vector<std::string> vec;
+    std::vector<double> val;
+    std::vector<double> a;
+    std::vector<double> b;
+
+    // vec.push_back("x+10");
+    // a.push_back(-20);
+    // b.push_back(20);
+    // val.push_back(20);
+    vec.push_back("x^2");
+    a.push_back(8);
+    b.push_back(8.05);
+    val.push_back(0);
+    // vec.push_back("(x-5)^2-5");
+    // a.push_back(0);
+    // b.push_back(11);
+    // val.push_back(5);
+    // vec.push_back("-abs(x-10)");
+    // a.push_back(0);
+    // b.push_back(11);
+    // val.push_back(10);
+    // vec.push_back("sin(x)");
+    // a.push_back(0);
+    // b.push_back(pi);
+    // val.push_back(pi/2);
+    // REQUIRE(val[0] == halfExtr(a, b, er, vec[0]));
+    for (int k = 0; k < vec.size(); k++) {
+        REQUIRE(val[k] == halfExtr(a[k], b[k], er, vec[k]));
+        REQUIRE(compare(val[k], halfExtr(a[k], b[k], er, vec[k]), 10));
+    }
+}
+
+TEST_CASE("CHECK_EXTR2") {
+    // double er = 0.01;
+    // std::vector<std::string> vec;
+    // std::vector<double> val;
+    // std::vector<double> a;
+    // std::vector<double> b;
+
+    // vec.push_back("x+10");
+    // a.push_back(-20);
+    // b.push_back(20);
+    // val.push_back(20);
+    // higher_lower__point_x_and_minus_border(a[k], b[k], er, vec[k], xmax, xmin, c, d);
+    double a = -10;
+    double b = 10;
+    double c = 0;
+    double d = 0;
+    double step = (b-a)/100;
+    std::string function = "(x-5)^2-5";
+    double border = 0;
+    double minus_border = 0;
+    higher_lower_point2(a, b, c, d, step, function, border, minus_border);
+    REQUIRE(compare(minus_border, -5, 10));
+}
+
+TEST_CASE("CHECK_CROSS2") {
+    // double er = 0.01;
+    // std::vector<std::string> vec;
+    // std::vector<double> val;
+    // std::vector<double> a;
+    // std::vector<double> b;
+
+    // vec.push_back("x+10");
+    // a.push_back(-20);
+    // b.push_back(20);
+    // val.push_back(20);
+    // higher_lower__point_x_and_minus_border(a[k], b[k], er, vec[k], xmax, xmin, c, d);
+    double a = -10;
+    double b = 10;
+    double c = 0;
+    double d = 0;
+    double step = (b-a)/100;
+    std::string function = "(x-5)^2-5";
+    double border = 0;
+    double minus_border = 0;
+    higher_lower_point2(a, b, c, d, step, function, border, minus_border);
+    // REQUIRE(d == 7.23);
+    REQUIRE(compare(d, 7.23, 1));
+    REQUIRE(compare(c, 2.76, 1));
+}
+
 TEST_CASE("CHECK_CARTESIAN") {
     int j = 0;
     double minus_border = 0;
@@ -144,7 +258,7 @@ TEST_CASE("CHECK_CARTESIAN") {
     std::vector<double> val;
     double truth = 0;
     double accur = 0;
-    double step = 0.001;
+    double step = (b-a)/100;;
     
     vec.push_back("(x-5)^2-5");
     val.push_back(33.333);
@@ -183,7 +297,7 @@ TEST_CASE("CHECK_POLAR") {
     std::vector<double> val;
     double truth = 0;
     double accur = 0;
-    double step = 0.001;
+    double step = (b-a)/100;;
     
 
     vec.push_back("x");
