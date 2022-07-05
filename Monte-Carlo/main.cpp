@@ -26,7 +26,7 @@ int main() {
         printf("Do it in polar coordinate system is unreal, but we can use formula f = 0.5*(f)^2\n");
         function = "0.5*(" + function + ")^2";
     }
-    int num = 100000; // кол-во точек
+    int num = 50; // кол-во точек
     printf("Set count of dots (10^5 dots - 3 sec for each integral) ");
     scanf("%d", &num);
     double a = -5; // предел интегрирования слева
@@ -35,8 +35,8 @@ int main() {
     double b = 5; // предел интегрирования справа
     printf("Set right limit of integration ");
     scanf("%lf", &b);
-    double step = (b-a)/1000000; // дискретизация
-    int count = 5;
+    double step = (b-a)/1000; // дискретизация
+    int count = 10;
     printf("Set count of integrals ");
     scanf("%d", &count);
     int pointsOnGraph = 8;
